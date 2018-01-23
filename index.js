@@ -10,32 +10,36 @@ puppeteer.launch({
   headless: true,
   //slowMo: 10      // 何が起こっているかを分かりやすくするため遅延
 }).then(async browser => {
-  const page = await browser.newPage();
+  try {
+    const page = await browser.newPage();
 
-  // dmmにログイン
-  await page.setViewport({ width: 1200, height: 800 }); // view portの指定
-  await page.goto('https://mvno.dmm.com/mypage/-/datatraffic/', {
-    timeout: 90000
-  });
-  await page.type('#login_id', config.login.id);
-  await page.type('#password', config.login.password);
-  const submitButton = await page.$('input[type=submit]');
-  await submitButton.click();
+    // dmmにログイン
+    await page.setViewport({ width: 1200, height: 800 }); // view portの指定
+    await page.goto('https://mvno.dmm.com/mypage/-/datatraffic/', {
+      timeout: 90000
+    });
+    await page.type('#login_id', config.login.id);
+    await page.type('#password', config.login.password);
+    const submitButton = await page.$('input[type=submit]');
+    await submitButton.click();
 
-  // db接続
-  connectDb();
+    // db接続
+    connectDb();
 
-  // データ取得
-  await page.waitForSelector('section.box-recentCharge tbody tr');
-  const optionValues = await page.evaluate(() => {
-    return Array.from(document.querySelector('#fn-number').options).map(option => option.value);
-  });
-  for (let optionValue of optionValues) {
-    await changeSelect(page, optionValue);
-    await crawlData(page);
+    // データ取得
+    await page.waitForSelector('section.box-recentCharge tbody tr');
+    const optionValues = await page.evaluate(() => {
+      return Array.from(document.querySelector('#fn-number').options).map(option => option.value);
+    });
+    for (let optionValue of optionValues) {
+      await changeSelect(page, optionValue);
+      await crawlData(page);
+    }
+    browser.close();
+  } catch(e) {
+    console.log(e);
+    browser.close();
   }
-
-  browser.close();
 });
 
 async function changeSelect(page, val) {
