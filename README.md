@@ -1,7 +1,7 @@
 # Get DMM Traffic data
 ## Getting Started
 - yarn
-- add yaml to config/
+- add default.yaml to config/
 
 ```
 login:
@@ -13,4 +13,5 @@ db:
   password: ''
 ```
 
-- create table(use schema.sql)
+- create database(dmm_crawler) and table(use schema.sql)
+- add your contract info to database
