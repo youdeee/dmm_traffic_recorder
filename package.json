@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "config": "^1.29.2",
+    "mysql2": "^1.5.1",
+    "puppeteer": "^1.0.0",
+    "sequelize": "^4.31.2",
+    "yaml": "^0.3.0"
+  }
+}
