@@ -1,15 +1,24 @@
 const puppeteer = require('puppeteer');
 const config = require('config');
+const log4js = require('log4js');
+log4js.configure({
+  appenders: { cheese: { type: 'file', filename: 'production.log' } },
+  categories: { default: { appenders: ['cheese'], level: 'debug' } }
+});
+const logger = log4js.getLogger('cheese');
 const Sequelize = require('sequelize');
 const sequelize = new Sequelize('dmm_crawler', config.db.user, config.db.password, {
   host : config.db.host,
   dialect: 'mysql'
 });
 
-puppeteer.launch({
-  headless: true,
-  //slowMo: 10      // 何が起こっているかを分かりやすくするため遅延
-}).then(async browser => {
+(async () => {
+  logger.debug("Logging start...");
+
+  const browser = await puppeteer.launch({
+    headless: true,
+    //slowMo: 10      // 何が起こっているかを分かりやすくするため遅延
+  });
   try {
     const page = await browser.newPage();
 
@@ -35,12 +44,14 @@ puppeteer.launch({
       await changeSelect(page, optionValue);
       await crawlData(page);
     }
-    browser.close();
+    await browser.close();
   } catch(e) {
-    console.log(e);
-    browser.close();
+    logger.error(e);
+    await browser.close();
   }
-});
+  logger.debug("Logging end.");
+  await process.exit();
+})();
 
 async function changeSelect(page, val) {
   await page.select('select#fn-number', val);
@@ -77,15 +88,14 @@ function connectDb() {
   sequelize
     .authenticate()
     .then(() => {
-      console.log('Connection has been established successfully.');
+      logger.debug('Connection has been established successfully.');
     })
     .catch(err => {
-      console.error('Unable to connect to the database:', err);
+      logger.error('Unable to connect to the database:', err);
     });
 }
 
 async function saveData(phoneNumber, data) {
-  console.log('saving...');
   const contract = await Contract.findOne({
     where: { phone_number: phoneNumber }
   });
