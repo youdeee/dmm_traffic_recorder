@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const config = require('config');
 const log4js = require('log4js');
 log4js.configure({
-  appenders: { cheese: { type: 'file', filename: 'production.log' } },
+  appenders: { cheese: { type: 'file', filename: config.log.file } },
   categories: { default: { appenders: ['cheese'], level: 'debug' } }
 });
 const logger = log4js.getLogger('cheese');
