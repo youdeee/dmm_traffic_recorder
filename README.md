@@ -13,7 +13,6 @@ db:
   password: ''
 log:
   file: ''
-
 ```
 
 - create database(dmm_crawler) and table(use schema.sql)
