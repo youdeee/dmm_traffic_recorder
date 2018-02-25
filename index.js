@@ -71,7 +71,7 @@ async function crawlData(page) {
   const data = await page.evaluate(() => {
     const trs = Array.from(document.querySelectorAll('section.box-recentCharge tbody tr'));
     return trs.map(tr => {
-      return Array.from(tr.children).map((td, i) => {
+      return Array.from(tr.children).slice(0, 3).map((td, i) => {
         const data = td.textContent.trim();
         if (i == 0) return data;
         const num = data.match(/[\d|\.]+/)[0];
